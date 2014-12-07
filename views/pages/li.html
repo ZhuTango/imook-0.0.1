@@ -1,0 +1,68 @@
+<html>
+
+<head>
+
+</head>
+
+<body onload="startTime()">
+  <div id="txt"></div>
+  <input type="button" onclick="reStartTime()" value="重新开始"></input>
+  <input type="button" onclick="stopTiming()" value="停止"></input>
+  <input type="button" onclick="continueTime()" value="继续"></input>
+  <script type="text/javascript">
+    var originTime = new Date()
+    var stopTime = null
+    var stopFlag = 0
+
+     // 开始计时
+    function startTime() {
+
+      var today = new Date()
+      var time = today.getTime() - originTime.getTime()
+      today.setTime(time)
+      var m = today.getMinutes()
+      var s = today.getSeconds()
+
+      // add a zero in front of numbers<10
+      m = checkTime(m)
+      s = checkTime(s)
+      document.getElementById('txt').innerHTML = m + ":" + s
+      t = setTimeout('startTime()', 1000)
+    }
+
+     // 位数少于两位前自动加“0”
+    function checkTime(i) {
+      if (i < 10) {
+        i = "0" + i
+      }
+      return i
+    }
+
+     // 重新开始计时
+    function reStartTime() {
+      originTime = new Date()
+      startTime()
+    }
+
+     //停止计时
+    function stopTiming() {
+      clearTimeout(t);
+      stopTime = new Date();
+      stopFlag = 1
+    }
+
+     // 继续计时
+    function continueTime() {
+      if (stopFlag == 1) {
+        var nowTime = new Date()
+        var time = originTime.getTime() + nowTime.getTime() - stopTime.getTime()
+        originTime.setTime(time)
+        startTime()
+        stopFlag = 0;
+      }
+
+    }
+  </script>
+</body>
+
+</html>
