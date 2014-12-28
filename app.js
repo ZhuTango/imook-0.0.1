@@ -1,13 +1,13 @@
 var express = require('express')
 var path = require('path')
-var mongoose = requier('mongoose')
+var mongoose = require('mongoose')
 var _ = require('underscore')
 var Movie = require('./models/movie')
 var port = process.env.PORT || 3000
 var app = express()
 var bodyParser = require('body-parser')
 
-mongoose.connect('mondodb://localhost/imook')
+mongoose.connect('mongodb://localhost/imook')
 
 app.set('views', './views/pages')
 app.set('view engine', 'jade')
@@ -15,10 +15,11 @@ app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
-app.use(express.static(path.join(__dirname, 'bower_components')))
+app.use(express.static(path.join(__dirname, 'public')))
 app.listen(port)
 
 console.log('imook started on port ' + port)
+
 
 //index page
 app.get('/', function (req, res) {
@@ -26,8 +27,9 @@ app.get('/', function (req, res) {
     if (err) {
       console.log(err)
     }
+    console.log(JSON.stringify(movies))
     res.render('index', {
-      title: 'imook 首页'，
+      title: 'imook 首页',
       movies: movies
     })
   })
@@ -49,14 +51,14 @@ app.get('/admin/movie', function (req, res) {
   res.render('admin', {
     title: 'imooc 后台录入页',
     movie: {
+      title: '',
       doctor: '',
       country: '',
-      title: '',
       year: '',
       poster: '',
-      language: '',
       flash: '',
-      summary: ''
+      summary: '',
+      language: ''
     }
   })
 })
@@ -77,11 +79,14 @@ app.get('/admin/update/:id', function (req, res) {
 })
 
 //admin post movie
-app.post('/admin/movie/new', function (res, req) {
-  var id = req.body.movie._id
-  var movieObj = req.body.movie
-  var _movie
-  if (id !== 'undefined') {
+app.post('/admin/movie/new', function (req, res) {
+  //console.log(JSON.stringify(req.body))
+  var id = req.body._id
+  //console.log(req.body.movie)/
+  var movieObj = req.body
+  var _movie = new Movie()
+  console.log("id: " + id)
+  if (id !== "undefined") {
     Movie.findById(id, function (err, movie) {
       if (err) {
         console.log(err)
@@ -91,7 +96,7 @@ app.post('/admin/movie/new', function (res, req) {
         if (err) {
           console.log(err)
         }
-        res.redirect('/movie' + movie.id)
+        res.redirect('/movie/' + movie._id)
       })
     })
   } else {
@@ -105,11 +110,12 @@ app.post('/admin/movie/new', function (res, req) {
       summary: movieObj.summary,
       flash: movieObj.flash
     })
-    _movies.save(function (err, movie) {
+     console.log(JSON.stringify(_movie))
+    _movie.save(function (err, movie) {
       if (err) {
         console.log(err)
       }
-      res.redirect('/movie' + movie._id)
+      res.redirect('/movie/' + movie._id)
     })
   }
 })
@@ -120,10 +126,26 @@ app.get('/admin/list', function (req, res) {
     if (err) {
       console.log(err)
     }
-    res.render('index', {
-      title: 'imook 首页'，
+    res.render('list', {
+      title: 'imook 首页',
       movies: movies
     })
   })
+})
 
+//list delete movie
+app.delete('/admin/list', function(req, res){
+  var id = req.query.id //获取?传值内容
+  //console.log("*****" + JSON.stringify(req.query))
+  
+  if(id){
+    Movie.remove({_id: id}, function(err, movie){
+      if(err){
+        console.log(err)
+      }else{
+        res.json({success: 1})
+      }
+      
+    })
+  }
 })

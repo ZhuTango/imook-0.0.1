@@ -1,0 +1,27 @@
+{
+  "name": "imook",
+  "version": "0.0.1",
+  "authors": [
+    "ZhuTango <zhujianshansan@163.com>"
+  ],
+  "description": "imook movie",
+  "keywords": [
+    "node",
+    "express",
+    "mongoose",
+    "jade"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/libs",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "flat-ui": "~2.2.2",
+    "bootstrap": "~3.3.1"
+  }
+}
